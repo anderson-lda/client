@@ -12,7 +12,7 @@ export default function Login(){
                     <h1>Access your account</h1>
                     <input placeholder='Username' />
                     <input type='password' placeholder='Password'/>
-                    <button type='submit'>Login</button>
+                    <button className='button' type='submit'>Login</button>
                 </form>
                 </section>
                 <img src={padlock} alt="Login"/>
