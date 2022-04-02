@@ -21,7 +21,7 @@ export default function Login(){
             const response = await api.post('api/auth/v1/signin',data);
             localStorage.setItem('userName',userName);
             localStorage.setItem('accessToken',response.data.accessToken);
-            localStorage.setItem('accessToken',response.data.refreshToken);
+            localStorage.setItem('refreshToken',response.data.refreshToken);
 
             navigate('books')
         }catch(error){
