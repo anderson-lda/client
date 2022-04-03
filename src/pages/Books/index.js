@@ -7,28 +7,39 @@ import  api from '../../services/api';
 
 export default function Books(){
     const [books,setBooks] = useState([]);
+    const [page,setPage] = useState(1);
     const userName = localStorage.getItem('userName');
     const accessToken = localStorage.getItem('accessToken');
+    const authorization = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    }
 
     const navigate = useNavigate();
 
     useEffect(()=>{
-        api.get('api/Book/v1/asc/10/1',{
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            }
-        }).then(response=>{
-            setBooks(response.data.list)
-        });
+        fetchMoreBooks();
     },[accessToken]);//accessToken é o monitorado, entao sempre que ele mudar outro get é feito
+
+    async function fetchMoreBooks(){
+        const response = await api.get(`api/Book/v1/asc/4/${page}`,authorization);
+            setBooks([...books, ...response.data.list]);
+            setPage(page+1);
+    }
+
+    async function editBook(id){
+        try{
+            navigate(`/book/new/${id}`);
+        }catch(err){
+            alert('Edit book failed');
+            console.log(err)
+        }
+    }
 
     async function deleteBook(id){
         try{
-            await api.delete(`api/Book/v1/${id}`,{
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            });
+            await api.delete(`api/Book/v1/${id}`,authorization);
             setBooks(books.filter(book=>book.id !== id));
         }catch(err){
             alert('Delete failed');
@@ -54,7 +65,7 @@ export default function Books(){
             <header>
                 <img src={logoImage} alt="Erudio"/>
                 <span>Welcome, <strong>{userName.toUpperCase()}</strong>!</span>
-                <Link className="button" to="/book/new">Add new book</Link>
+                <Link className="button" to="/book/new/0">Add new book</Link>
                 <button onClick={logout} type="button">
                     <FiPower size={18} color="#251FC5"/>
                 </button>
@@ -71,7 +82,7 @@ export default function Books(){
                         <p>{Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(book.price)}</p>
                         <strong>Release Date:</strong>
                         <p>{Intl.DateTimeFormat('pt-BR').format(new Date(book.launch_date))}</p>
-                        <button type="button">
+                        <button onClick={()=>editBook(book.id)} type="button">
                             <FiEdit size={20} color="#251FC5"/>
                         </button>
                         <button onClick={()=>deleteBook(book.id)} type="button">
@@ -80,6 +91,9 @@ export default function Books(){
                     </li>
                 ))}
             </ul>
+            <button className="button" onClick={fetchMoreBooks} type="button">
+                Load More
+            </button>
         </div>
     );
 }

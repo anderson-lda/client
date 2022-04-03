@@ -10,7 +10,7 @@ export default function Rotas(){
         <Routes>
             <Route path="/" exact element={<Login/>}/>
             <Route path="/books" element={<Books/>}/>
-            <Route path="/book/new" element={<NewBook/>}/>
+            <Route path="/book/new/:bookId" element={<NewBook/>}/>
         </Routes>
         </BrowserRouter>
     );
